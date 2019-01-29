@@ -2692,7 +2692,11 @@ for (my $i=0;$i < $num_int; $i++) {
         $perf_out .= " ".perf_name($descr,"out_discard")."=". $interfaces[$i]{'out_dropped'} if defined ($interfaces[$i]{'out_dropped'});
     }
     if (defined($interfaces[$i]{'portspeed'}) && defined($o_perf) && defined($o_intspeed)) {
-        $perf_out .= " ".perf_name($descr,"speed_bps")."=".$interfaces[$i]{'portspeed'};
+        if (defined($o_kbits)) { # bps
+            $perf_out .= " ".perf_name($descr,"speed_bps")."=".$interfaces[$i]{'portspeed'};
+        } else { # Bps
+            $perf_out .= " ".perf_name($descr,"speed_Bps")."=".$interfaces[$i]{'portspeed'} / 8;
+        }
     }
   }
 }
