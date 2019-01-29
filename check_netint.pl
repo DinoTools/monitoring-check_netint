@@ -2310,7 +2310,8 @@ my $speed_metric=undef;
 
 # make all checks and output for all interfaces
 for (my $i=0;$i < $num_int; $i++) {
-  $print_out.=", " if ($print_out);
+  $print_out.="\n" if ($print_out);
+  $print_out.="- ";
   $perf_out .= " " if ($perf_out);
   my $usable_data=1; # 0 is OK, 1 means its not OK
 
@@ -2735,15 +2736,15 @@ if (($num_ok == $num_int) || (defined($o_admindown_ok) && $num_ok+$num_admindown
   $exit_status="WARNING" if $final_status==1;
   $exit_status="CRITICAL" if $final_status==2;
   if (defined($o_admindown_ok)) {
-     print $print_out," ($num_ok UP, $num_admindown ADMIN DOWN): $exit_status";
+     print "$exit_status: $num_ok UP, $num_admindown ADMIN DOWN \n", $print_out;
   } else {
-     print $print_out," ($num_ok UP): $exit_status";
+     print "$exit_status: $num_ok UP \n", $print_out;
   }
 }
 # print the not OK interface number and exit (return is always critical if at least one int is down)
 else {
   $exit_status="CRITICAL";
-  print $print_out,": ", $num_int-$num_ok-$num_admindown, " int NOK : CRITICAL";
+  print "$exit_status: $num_ok UP, $num_admindown ADMIN DOWN, ", $num_int-$num_ok-$num_admindown, " NOK \n", $print_out;
 }
 print " | ",$perf_out if defined($perf_out) && $perf_out;
 if (defined($saved_out) && $saved_out) {
