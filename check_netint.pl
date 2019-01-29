@@ -1058,16 +1058,16 @@ sub process_perf {
 
 # this is normal way check_snmp_int does it
 # (function written by WL but based on previous code)
-sub perf_name {
+sub perf_name2 {
   my ($iname,$vtype) = @_;
   $iname =~ s/'\/\(\)/_/g; #' get rid of special characters in performance description name
   return "'".$iname."_".$vtype."'";
 }
 
 # alternative function used by WL
-sub perf_name2 {
+sub perf_name {
   my ($iname,$vtype) = @_;
-  $iname =~ s/'\/\(\)/_/g; #'
+  $iname =~ s/['\/\(\)]/_/g; #'
   $iname =~ s/\s/_/g;
   return $iname."_".$vtype;
 }
