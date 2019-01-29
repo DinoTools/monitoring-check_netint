@@ -2599,6 +2599,8 @@ for (my $i=0;$i < $num_int; $i++) {
   } elsif (defined($o_admindown_ok) && $ok_val==1 && !$o_admin && $int_status == $status{'DOWN'} && $admin_int_status == $status{'DOWN'}) {
     # we want to check for operational UP interfaces, so don't check those that are supposed to be down (administratively down)
     $num_admindown++;
+  } else {
+    $print_out.=" !!!";
   }
   # Don't return performance data for interfaces that are down and are supposed to be down
   if (!(defined($o_admindown_ok) && $ok_val==1 && $int_status == $status{'DOWN'} && $admin_int_status == $status{'DOWN'}) && defined($interfaces[$i]{'descr'}) && (defined($o_perf) || defined($o_intspeed) || defined($o_perfr) || defined($o_perfp) || defined($o_checkperf))) {
