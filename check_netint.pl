@@ -1456,11 +1456,34 @@ sub create_snmp_session {
   return $session;
 }
 
+sub split_by {
+  my $split_size = shift;
+
+  if ($split_size < 1) {
+    $split_size = 1;
+  }
+
+  my @sub_arrays;
+  while ( @_ ) {
+    push @sub_arrays, [ splice @_, 0, $split_size ];
+  }
+
+  return @sub_arrays;
+}
+
 # function that does snmp get request for a list of OIDs
 # 1st argument is session, 2nd is ref to list of OIDs,
 # 3rd is optional text for error & debug info
 # 4th argument is optional hash of array to be filled with results
 sub snmp_get_request {
+  my ($session, $oids_ref, $table_name, $results) = @_;
+  my @oids_ref_split = split_by(30, @{$oids_ref});
+  foreach my $oid (@oids_ref_split) {
+    snmp_get_request2($session, \@$oid, "status table", $results);
+  }
+}
+
+sub snmp_get_request2 {
   my ($session, $oids_ref, $table_name, $results) = @_;
   my $result = undef;
 
