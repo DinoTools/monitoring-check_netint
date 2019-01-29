@@ -2183,7 +2183,7 @@ sub getdata_snmp {
 	 }
 
          # Try to use HighSpeed value if 64bit option is set
-         if (defined ($o_highperf) && defined ($results->{$oid_speed_high[$i]}) && $results->{$oid_speed_high[$i]} != 0) {
+         if (defined ($o_highperf) && defined ($oid_speed_high[$i]) && defined ($results->{$oid_speed_high[$i]}) && $results->{$oid_speed_high[$i]} != 0) {
            $interfaces[$i]{'portspeed'}=$results->{$oid_speed_high[$i]} * 1000000;
          } elsif (defined($oid_speed[$i]) && defined($results->{$oid_speed[$i]})) {
 	     # Get the speed in normal or highperf speed counters
