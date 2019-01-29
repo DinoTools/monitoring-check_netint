@@ -1865,7 +1865,8 @@ sub getdata_snmp {
 	 exit $ERRORS{"UNKNOWN"};
       }
       # Select interface by regexp of exact match and put the oid to query in an array
-      foreach my $key (keys %$result1) {
+      # Sort interfaces by OID
+      foreach my $key (sort { (split '\.', $a)[-1] <=> (split '\.', $b)[-1]}(keys %$result1)) {
 	 $data1 = clean_int_name($result1->{$key});
 	 verb(" OID : $key, Clean Desc : $data1, Raw Desc: ".$result1->{$key});
 
