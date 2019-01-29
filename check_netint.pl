@@ -669,6 +669,7 @@ my $o_noreg=		undef;	# Do not use Regexp for name
 my $o_short=		undef;	# set maximum of n chars to be displayed
 my $o_label=		undef;	# add label before speed (in, out, etc...).
 my $o_admindown_ok=	undef;  # admin down is ok (usefull when checking operational status)
+my $o_skip_not_present=	undef;  # skip interfaces not present
 
 # Speed/error checks
 my $o_warn_opt=         undef;  # warning options
@@ -865,6 +866,9 @@ Interface Selection and Status Output options:
 -K, --admindown_ok
    Indicate that administrative down status is OK for operational
    interfaces that are down
+--skip_not_present
+   Some devices also report interfaces not present. Use this option to skip
+   this interfaces.
 
 Note : when multiple interfaces are selected with regexp,
        all must be up (or down with -i) to get an OK result.
@@ -1104,6 +1108,7 @@ sub check_options {
 	'D'     => \$o_dormant,         'dormant'       => \$o_dormant,
         'I'     => \$o_ignorestatus,    'ignorestatus'  => \$o_ignorestatus,
 	'K'	=> \$o_admindown_ok,	'admindown_ok'	=> \$o_admindown_ok,
+					'skip_not_present'	=> \$o_skip_not_present,
 	'r'	=> \$o_noreg,		'noregexp'	=> \$o_noreg,
 	'V'	=> \$o_version,		'version'	=> \$o_version,
         'f'     => \$o_perf,            'perfparse'     => \$o_perf,
@@ -2291,6 +2296,7 @@ if ($num_int == 0) {
 # some more global variables, some should possibly move further up to main vars definition
 my $num_ok=0;
 my $num_admindown=0;
+my $num_skipped=0;
 my $ok_val= defined ($o_inverse) ? 2 : 1;  # define the OK value depending on -i option
 my $final_status = 0;
 my $print_out='';
@@ -2313,9 +2319,6 @@ my $speed_metric=undef;
 
 # make all checks and output for all interfaces
 for (my $i=0;$i < $num_int; $i++) {
-  $print_out.="\n" if ($print_out);
-  $print_out.="- ";
-  $perf_out .= " " if ($perf_out);
   my $usable_data=1; # 0 is OK, 1 means its not OK
 
   # Get the status of the current interface
@@ -2341,6 +2344,14 @@ for (my $i=0;$i < $num_int; $i++) {
      }
      $int_status = $interfaces[$i]{'up_status'} if exists($interfaces[$i]{'up_status'});
   }
+  if (defined($o_skip_not_present) && $int_status == $status{'NotPresent'}) {
+    # Skip interfaces not present
+    $num_skipped++;
+    next;
+  }
+  $print_out.="\n" if ($print_out);
+  $print_out.="- ";
+  $perf_out .= " " if ($perf_out);
   if (exists($interfaces[$i]{'status_extratext'})) {
      $int_status_extratext.=", " if $int_status_extratext;
      $int_status_extratext.=$interfaces[$i]{'status_extratext'};
@@ -2740,7 +2751,7 @@ alarm(0);
 # WL: partially rewritten these last steps to minimize amount of code
 # Check if all interface are OK
 my $exit_status="UNKNOWN";
-if (($num_ok == $num_int) || (defined($o_admindown_ok) && $num_ok+$num_admindown == $num_int) ) {
+if (($num_ok == $num_int) || (defined($o_admindown_ok) && $num_ok+$num_admindown+$num_skipped == $num_int) ) {
   $exit_status="OK" if $final_status==0;
   $exit_status="WARNING" if $final_status==1;
   $exit_status="CRITICAL" if $final_status==2;
@@ -2753,7 +2764,7 @@ if (($num_ok == $num_int) || (defined($o_admindown_ok) && $num_ok+$num_admindown
 # print the not OK interface number and exit (return is always critical if at least one int is down)
 else {
   $exit_status="CRITICAL";
-  print "$exit_status: $num_ok UP, $num_admindown ADMIN DOWN, ", $num_int-$num_ok-$num_admindown, " NOK \n", $print_out;
+  print "$exit_status: $num_ok UP, $num_admindown ADMIN DOWN, ", $num_int-$num_ok-$num_admindown-$num_skipped, " NOK \n", $print_out;
 }
 print " | ",$perf_out if defined($perf_out) && $perf_out;
 if (defined($saved_out) && $saved_out) {
