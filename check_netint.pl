@@ -3,8 +3,8 @@
 # =============================== SUMMARY =====================================
 #
 # Program : check_netint.pl or check_snmp_netint.pl
-# Version : 2.4 alpha 9
-# Date    : Nov 30, 2012
+# Version : 2.4
+# Date    : Mar 27, 2019
 # Maintainer: William Leibzon - william@leibzon.org,
 # Authors : See "CONTRIBUTORS" documentation section
 # Licence : GPL - summary below, full text at http://www.fsf.org/licenses/gpl.txt
