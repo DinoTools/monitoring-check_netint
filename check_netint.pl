@@ -2352,7 +2352,7 @@ for (my $i=0;$i < $num_int; $i++) {
   }
   $print_out.="\n" if ($print_out);
   $print_out.="- ";
-  $perf_out .= " " if ($perf_out);
+  #  $perf_out .= " " if ($perf_out);
   if (exists($interfaces[$i]{'status_extratext'})) {
      $int_status_extratext.=", " if $int_status_extratext;
      $int_status_extratext.=$interfaces[$i]{'status_extratext'};
@@ -2658,12 +2658,12 @@ for (my $i=0;$i < $num_int; $i++) {
 			$perf_out .= sprintf("%.0f",$checkperf_out[0] * 8 * $speed_metric) .";" if defined($checkperf_out[0]);
 			$perf_out .= (defined($o_warn_max[0]) && $o_warn_max[0]) ? $o_warn_max[0]*$warn_factor . ";" : ";";
 			$perf_out .= (defined($o_crit_max[0]) && $o_crit_max[0]) ? $o_crit_max[0]*$warn_factor . ";" : ";";
-			$perf_out .= "0;". $interfaces[$i]{'portspeed'} ." " if defined($interfaces[$i]{'portspeed'});
+			$perf_out .= "0;". $interfaces[$i]{'portspeed'} if defined($interfaces[$i]{'portspeed'});
 			$perf_out .= " ".perf_name($descr, "out_bps"). "=";
 			$perf_out .= sprintf("%.0f",$checkperf_out[1] * 8 * $speed_metric) .";" if defined($checkperf_out[1]);
 			$perf_out .= (defined($o_warn_max[1]) && $o_warn_max[1]) ? $o_warn_max[1]*$warn_factor . ";" : ";";
 			$perf_out .= (defined($o_crit_max[1]) && $o_crit_max[1]) ? $o_crit_max[1]*$warn_factor . ";" : ";";
-			$perf_out .= "0;". $interfaces[$i]{'portspeed'} ." " if defined($interfaces[$i]{'portspeed'});
+			$perf_out .= "0;". $interfaces[$i]{'portspeed'} if defined($interfaces[$i]{'portspeed'});
 		  }
 	    } else { # Bps
 		  my $warn_factor = undef;
@@ -2676,11 +2676,11 @@ for (my $i=0;$i < $num_int; $i++) {
 			$perf_out .= " ".perf_name($descr,"in_Bps")."=" . sprintf("%.0f",$checkperf_out[0] * $speed_metric) .";" if defined($checkperf_out[0]);
 			$perf_out .= (defined($o_warn_max[0]) && $o_warn_max[0]) ? $o_warn_max[0]*$warn_factor . ";" : ";";
 			$perf_out .= (defined($o_crit_max[0]) && $o_crit_max[0]) ? $o_crit_max[0]*$warn_factor . ";" : ";";
-			$perf_out .= "0;". $interfaces[$i]{'portspeed'} / 8 ." " if defined($interfaces[$i]{'portspeed'});
+			$perf_out .= "0;". $interfaces[$i]{'portspeed'} / 8 if defined($interfaces[$i]{'portspeed'});
 			$perf_out .= " ".perf_name($descr,"out_Bps")."=" . sprintf("%.0f",$checkperf_out[1] * $speed_metric) .";" if defined($checkperf_out[1]);
 			$perf_out .= (defined($o_warn_max[1]) && $o_warn_max[1]) ? $o_warn_max[1]*$warn_factor . ";" : ";";
 			$perf_out .= (defined($o_crit_max[1]) && $o_crit_max[1]) ? $o_crit_max[1]*$warn_factor . ";" : ";";
-			$perf_out .= "0;". $interfaces[$i]{'portspeed'} / 8 ." " if defined($interfaces[$i]{'portspeed'});
+			$perf_out .= "0;". $interfaces[$i]{'portspeed'} / 8 if defined($interfaces[$i]{'portspeed'});
 		  }
 	    }
 	}
@@ -2767,7 +2767,7 @@ else {
   $exit_status="CRITICAL";
   print "$exit_status: $num_ok UP, $num_admindown ADMIN DOWN, ", $num_int-$num_ok-$num_admindown-$num_skipped, " NOK \n", $print_out;
 }
-print " | ",$perf_out if defined($perf_out) && $perf_out;
+print " |",$perf_out if defined($perf_out) && $perf_out;
 if (defined($saved_out) && $saved_out) {
 	print " ||" if defined($o_nagios_saveddata);
 	print $saved_out;
