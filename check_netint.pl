@@ -813,8 +813,12 @@ my $o_privpass    = undef; # priv password
 
 # Readable names for counters (M. Berger contrib)
 my @countername = (
-    "in=",         "out=", "errors-in=", "errors-out=",
-    "discard-in=", "discard-out="
+    "in=",
+    "out=",
+    "errors-in=",
+    "errors-out=",
+    "discard-in=",
+    "discard-out="
 );
 my $checkperf_out_desc;
 
@@ -936,7 +940,7 @@ sub help {
 -V, --version
    prints plugin version number (required of all nagios plugins)
 -t, --timeout=INTEGER
-   timeout in seconds (Default: 5). if SNMP this is timeout for SNMP response
+   timeout in seconds (Default: $TIMEOUT). if SNMP this is timeout for SNMP response
 -v, --verbose[=FILENAME], --debug=FILENAME
    Print extra debugging information (including interface list on the system)
    If filename is specified instead of STDOUT the debug data is written to that file
@@ -1420,14 +1424,12 @@ sub check_options {
             exit $ERRORS{"UNKNOWN"};
         }
     }
-    if ( defined($o_timeout)
-        && ( isnnum($o_timeout) || ( $o_timeout < 2 ) || ( $o_timeout > 60 ) ) )
-    {
+    if ( !defined($o_timeout) ) { $o_timeout = $TIMEOUT; }
+    if ( isnnum($o_timeout) || ( $o_timeout < 2 ) || ( $o_timeout > 60 ) ) {
         print "Timeout must be >1 and <60 !\n";
         print_usage();
         exit $ERRORS{"UNKNOWN"};
     }
-    if ( !defined($o_timeout) ) { $o_timeout = 5; }
 
     # check if -e without -f
     if ( defined($o_perfe) && !defined($o_perf) ) {
@@ -2912,21 +2914,16 @@ sub getdata_snmp {
 check_options();
 
 # Check gobal timeout if snmp screws up
-if ( defined($TIMEOUT) ) {
-    verb("Alarm at $TIMEOUT + 5");
-    alarm( $TIMEOUT + 5 );
-}
-else {
-    verb("no timeout defined : $o_timeout + 10");
-    alarm( $o_timeout + 10 );
-}
+my $global_timeout = $o_timeout + 10;
+verb("Add alarm for global timeout $global_timeout");
+alarm( $global_timeout );
 
 $SIG{'ALRM'} = sub {
     if ( defined($o_host) ) {
-        print "ERROR: alarm timeout. No answer from host $o_host\n";
+        print "ERROR: alarm global timeout. No answer from host $o_host\n";
     }
     else {
-        print "ERROR: alarm timeout\n";
+        print "ERROR: alarm global timeout\n";
         kill 9, $shell_pid if defined($shell_pid);
     }
     exit $ERRORS{"UNKNOWN"};
